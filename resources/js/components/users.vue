@@ -60,6 +60,7 @@
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
+      <form @submit.prevent="CreateNewUser">
       <div class="modal-body">
             <div class="form-group">
         
@@ -82,8 +83,9 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Create new</button>
+        <button type="submit" class="btn btn-primary">Create new</button>
       </div>
+      </form>
     </div>
   </div>
 </div>
@@ -99,6 +101,11 @@ export default {
               email : '',
               password:''
           })
+      }
+    },
+    methods:{
+      CreateNewUser(){
+          this.form.post('api/user');
       }
     },
    mounted() {
