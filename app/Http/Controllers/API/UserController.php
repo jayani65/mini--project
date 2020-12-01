@@ -1,11 +1,11 @@
 <?php
 
 namespace App\Http\Controllers\API;
-
+use App\Models\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\User;
 use Illuminate\Support\Facades\Hash;
+
 class UserController extends Controller
 {
     /**
@@ -15,7 +15,7 @@ class UserController extends Controller
      */
     public function index()
     {
-        //
+        return User::latest()->paginate(10);
     }
 
     /**
@@ -26,11 +26,16 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-       return User::create([
-        'name'=> $request['name'],
-        'email'=> $request['email'],
-        'password'=>Hash::make($request['password']) ,
-       ]); 
+        $this->validate($request,[
+            'name'=>'required|string|max:191',
+            'email'=>'required|string|email|max:191|unique:users',
+            'password'=>'required|string|min:6'
+        ]);
+        return User::create([
+            'name'=>$request['name'],
+            'email'=>$request['email'],
+            'password'=>Hash::make($request['password'])
+        ]);
     }
 
     /**
@@ -64,6 +69,8 @@ class UserController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $user = User::findOrFail($id);
+        $user->delete();
+        return ['message'=>'User Deleted'];
     }
 }
