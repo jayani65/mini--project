@@ -9,8 +9,7 @@
             <div class="card-tools">
               <button
                 class="btn btn-success"
-                data-toggle="modal"
-                data-target="#addNew">
+                @click="newModal">
                 Add New<i class="fas fa-user-plus fa-fw"></i>
               </button>
             </div>
@@ -36,7 +35,7 @@
                   <td><span class="tag tag-success">Approved</span></td>
                   <td>{{ user.created_at | myDate }}</td>
                   <td>
-                    <a href="#" >
+                    <a href="#" @click="editModal(user)" >
                       <i class="fa fa-edit green"></i>
                     </a>
                     /
@@ -63,7 +62,8 @@
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="addnewLabel">Add New User</h5>
+            <h5 v-show="!editmode" class="modal-title" id="addnewLabel">Add New User</h5>
+            <h5 v-show="editmode" class="modal-title" id="addnewLabel">Update user's info</h5>
             <button
               type="button"
               class="close"
@@ -73,7 +73,7 @@
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
-          <form @submit.prevent="CreateNewUser">
+          <form @submit.prevent="editmode ? UpdateUser():CreateNewUser()">
             <div class="modal-body">
               <div class="form-group">
                 <input
@@ -112,7 +112,8 @@
               <button type="button" class="btn btn-danger" data-dismiss="modal">
                 Close
               </button>
-              <button type="submit" class="btn btn-primary">Create new</button>
+              <button v-show="editmode" type="submit" class="btn btn-success">update</button>
+              <button v-show="!editmode" type="submit" class="btn btn-primary">Create</button>
             </div>
           </form>
         </div>
@@ -124,7 +125,9 @@
 <script>
 export default {
   data() {
+     
     return {
+     editmode :true,
       users: {},
       form: new Form({
         name: "",
@@ -134,8 +137,21 @@ export default {
     };
   },
   methods: {
-   
-    deleteUser(id) {
+    UpdateUser(){
+console.log("updated");
+    },
+    newModal(){
+      this.editmode=false;
+this.form.reset();
+ $("#addnew").modal("show");
+    },
+    editModal(user){
+      this.editmode=true;
+this.form.reset();
+ $("#addnew").modal("show");
+ this.form.fill(user);
+    },
+   deleteUser(id) {
       Swal.fire({
         title: "Are you sure?",
         text: "You won't be able to revert this!",
@@ -157,22 +173,24 @@ export default {
          }
       });
     },
+   
     loadUsers() {
       axios.get("api/user").then(({ data }) => (this.users = data.data));
     },
     CreateNewUser() {
-      this.$progress.start();
-      this.form.post("api/user").then(() => {
+     
+      this.form.post("api/user")
+      .then(() => {
         Fire.$emit("AfterCreate");
         $("#addnew").modal("hide");
-        Toast.fire({
+        toast.fire({
           icon: "success",
           title: "Successfully User Created",
         });
-        this.$progress.finish();
-      }).catch(()=>{
+        
+     }).catch(()=>{
 
-      });
+     });
     },
   },
   created() {
