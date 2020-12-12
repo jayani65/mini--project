@@ -37,6 +37,7 @@ let routes=[
    
     {path : '/dashboard', component:()=>import('./components/dashboard.vue')},
     {path :'/profile', component:()=>import('./components/profile.vue')},
+    {path :'/developer', component:()=>import('./components/developer.vue')},
     {path :'/users', component:()=>import('./components/users.vue')}
 
 
@@ -56,5 +57,13 @@ return text.charAt(0).toUpperCase()+text.slice(1)
  });
 const app = new Vue ({
     el : '#app',
-    router
+    router,
+    data:{
+        search:""
+    },
+    methods:{
+        searchit(){
+            Fire.$emit('searching');
+        }
+    }
 }); 

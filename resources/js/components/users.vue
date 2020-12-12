@@ -32,7 +32,7 @@
                   <td>{{ user.id }}</td>
                   <td>{{ user.name }}</td>
                   <td>{{ user.email }}</td>
-                  <td><span class="tag tag-success">Approved</span></td>
+                  <td>{{user.type}}</td>
                   <td>{{ user.created_at | myDate }}</td>
                   <td>
                     <a href="#" @click="editModal(user)" >
@@ -107,6 +107,21 @@
                 />
                 <has-error :form="form" field="password"></has-error>
               </div>
+              <div class="form-group">
+                <select
+                  v-model="form.type"
+                  
+                  name="type"
+                  class="form-control"
+                  :class="{ 'is-invalid': form.errors.has('type') }"
+                >
+                <option value="">Select user role</option>
+                <option value="admin">Admin</option>
+                <option value="user">User</option>
+                <option value="author">Author</option>
+                </select>
+                <has-error :form="form" field="type"></has-error>
+              </div>
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-danger" data-dismiss="modal">
@@ -130,15 +145,29 @@ export default {
      editmode :true,
       users: {},
       form: new Form({
+        id :"",
         name: "",
         email: "",
         password: "",
+        photo:"",
+        type:""
       }),
     };
   },
   methods: {
     UpdateUser(){
-console.log("updated");
+      this.$Progress.start();
+  //console.log("updated");
+  this.form.put('api/user/'+ this.form.id)
+  .then(()=>{
+    $("#addnew").modal("show");
+    Swal.fire("Updated!", "Information has been updated.", "success");
+    this.$Progress.finish();
+    Fire.$emit("AfterCreate");
+  })
+  .catch(()=>{
+    this.$Progress.fail();
+  });
     },
     newModal(){
       this.editmode=false;
@@ -194,6 +223,14 @@ this.form.reset();
     },
   },
   created() {
+   // Fire.$on('searching', ()=>{
+     // let query= 'this.$parent.search';
+      //axios.get('api/findUser?q'+query)
+      //.then((data)=>{
+        //this.users= data.data
+      //})
+      //.catch();
+    //}),
     this.loadUsers();
     Fire.$on("AfterCreate", () => {
       this.loadUsers();

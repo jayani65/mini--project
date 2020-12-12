@@ -13,6 +13,11 @@ class UserController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+
+     public function __construct(){
+       // $this->middleware('auth');
+       // $this->user->$user;
+     }
     public function index()
     {
         return User::latest()->paginate(10);
@@ -34,10 +39,35 @@ class UserController extends Controller
         return User::create([
             'name'=>$request['name'],
             'email'=>$request['email'],
-            'password'=>Hash::make($request['password'])
+            'password'=>Hash::make($request['password']),
+            'photo'=>$request['photo'],
+            'type'=>$request['type'],
+            
         ]);
     }
 
+
+
+    public function profile()
+    {
+        $user= auth('api')->user();
+    }
+
+    public function updateProfile(Request $request)
+    {
+        $this->validate($request,[
+            'name'=>'required|string|max:191',
+            'email'=>'required|string|email|max:191|unique:users',
+            'password'=>'required|string|min:6'
+        ]);
+        return User::create([
+            'name'=>$request['name'],
+            'email'=>$request['email'],
+            'password'=>Hash::make($request['password']),
+            
+            
+        ]);
+    }
     /**
      * Display the specified resource.
      *
@@ -58,7 +88,15 @@ class UserController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $user = User::findOrFail($id);
+        $this->validate($request,[
+            'name'=>'required|string|max:191',
+            'email'=>'required|string|email|max:191|unique:users,email,'.$user->id,
+            'password'=>'required|string|min:6'
+        ]);
+        $user->update($request->all());
+        return ['message'=>'User updated'];
+
     }
 
     /**
