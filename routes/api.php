@@ -24,12 +24,12 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 Route::apiResource('user',UserController::class);
 
-Route::post('register', [PassportAuthController::class, 'register']);
-Route::post('login', [PassportAuthController::class, 'login']);
+//Route::post('register', [PassportAuthController::class, 'register']);
+//Route::post('login', [PassportAuthController::class, 'login']);
 
-Route::middleware('auth:api')->group(function () {
-    Route::resource('posts', PostController::class);
-});
+//Route::middleware('auth:api')->group(function () {
+  //  Route::resource('posts', PostController::class);
+//});
 
-Route::get('profile','UserController@profile');
-Route::put('profile','UserController@updateProfile');
+Route::get('/profile',[UserController::class, 'profile']);
+Route::put('/profile',[UserController::class, 'updateProfile']);

@@ -1,8 +1,12 @@
 require('./bootstrap');
 
 window.Vue = require('vue');
-
+import CssBase from "css-loader/lib/css-base";
+import AddStyles from "style-loader/lib/addStyles";
 import { Form, HasError, AlertError } from 'vform';
+
+import Gate from "./Gate";
+Vue.prototype.$gate = new Gate(window.user);
 import moment from 'moment';
 import VueProgressBar from 'vue-progressbar';
 Vue.use(VueProgressBar,{
@@ -42,6 +46,11 @@ let routes=[
 
 
 ]
+
+Vue.component(
+    'not-found',
+    require('./components/NotFound.vue')
+)
 
 const router= new VueRouter({
     routes,

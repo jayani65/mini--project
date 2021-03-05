@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <div class="row mt-5">
+    <div class="row mt-5" v-if="$gate.isAdmin()">
       <div class="col-12">
         <div class="card">
           <div class="card-header">
@@ -51,6 +51,10 @@
         </div>
         <!-- /.card -->
       </div>
+    </div>
+
+    <div  v-if="!$gate.isAdmin()" >
+      <not-found></not-found>
     </div>
     <div
       class="modal fade"
@@ -138,7 +142,9 @@
 </template>
 
 <script>
+import NotFound from './NotFound.vue';
 export default {
+  components: { NotFound },
   data() {
      
     return {
@@ -204,7 +210,11 @@ this.form.reset();
     },
    
     loadUsers() {
+
+      if(this.$gate.isAdmin()){
       axios.get("api/user").then(({ data }) => (this.users = data.data));
+      }
+      
     },
     CreateNewUser() {
      
